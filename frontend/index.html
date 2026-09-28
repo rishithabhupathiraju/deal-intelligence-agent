@@ -14,44 +14,45 @@
         }
 
         body {
-            background: #f5f7fb;
-            color: #1f2937;
+            background: #f4f7fb;
+            color: #172033;
         }
 
         header {
-            background: #111827;
+            background: #101828;
             color: white;
             padding: 22px 40px;
         }
 
         header h1 {
-            font-size: 28px;
+            font-size: 25px;
+            margin-bottom: 5px;
         }
 
         header p {
-            margin-top: 6px;
-            color: #cbd5e1;
+            color: #b8c3d6;
+            font-size: 14px;
         }
 
         .container {
             max-width: 1100px;
-            margin: 30px auto;
+            margin: 35px auto;
             padding: 0 20px;
         }
 
-        .search-box {
+        .search-card {
             background: white;
-            padding: 24px;
+            padding: 25px;
             border-radius: 14px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
         }
 
-        .search-box h2 {
+        .search-card h2 {
             margin-bottom: 15px;
         }
 
-        .input-row {
+        .search-box {
             display: flex;
             gap: 12px;
         }
@@ -59,103 +60,122 @@
         input {
             flex: 1;
             padding: 13px;
-            border: 1px solid #d1d5db;
+            border: 1px solid #d0d5dd;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         button {
-            padding: 13px 22px;
-            border: none;
-            border-radius: 8px;
             background: #2563eb;
             color: white;
-            font-size: 16px;
+            border: none;
+            padding: 13px 22px;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: bold;
         }
 
         button:hover {
             background: #1d4ed8;
         }
 
-        .loading {
+        #loading {
             display: none;
-            margin: 20px 0;
-            text-align: center;
+            margin-top: 20px;
+            color: #2563eb;
             font-weight: bold;
         }
 
-        .dashboard {
+        #result {
             display: none;
         }
 
         .company-title {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+        }
+
+        .company-title h2 {
+            font-size: 24px;
+        }
+
+        .company-title p {
+            color: #667085;
+            margin-top: 5px;
         }
 
         .cards {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 18px;
         }
 
         .card {
             background: white;
             padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.07);
         }
 
         .card h3 {
-            margin-bottom: 12px;
-            font-size: 17px;
+            font-size: 16px;
+            margin-bottom: 10px;
         }
 
         .card p {
-            line-height: 1.6;
-            color: #4b5563;
-        }
-
-        .action {
-            grid-column: span 2;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-        }
-
-        .action p {
-            color: #1e40af;
-            font-weight: bold;
-        }
-
-        .memory {
-            margin-top: 25px;
-            background: #111827;
-            color: #e5e7eb;
-            padding: 22px;
-            border-radius: 14px;
-        }
-
-        .memory h3 {
-            margin-bottom: 12px;
-        }
-
-        .memory pre {
-            white-space: pre-wrap;
+            color: #475467;
             line-height: 1.5;
-            font-size: 13px;
+        }
+
+        .action-card {
+            margin-top: 18px;
+            background: #eaf2ff;
+            border: 1px solid #b8d2ff;
+            padding: 22px;
+            border-radius: 12px;
+        }
+
+        .action-card h3 {
+            color: #1d4ed8;
+            margin-bottom: 10px;
+        }
+
+        .memory-card {
+            margin-top: 25px;
+            background: #101828;
+            color: white;
+            padding: 22px;
+            border-radius: 12px;
+        }
+
+        .memory-card h3 {
+            margin-bottom: 15px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #d0d5dd;
+            font-size: 12px;
+            line-height: 1.5;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .error {
+            margin-top: 20px;
+            color: #b42318;
+            background: #fef3f2;
+            padding: 15px;
+            border-radius: 8px;
         }
 
         @media (max-width: 700px) {
-            .input-row {
-                flex-direction: column;
-            }
-
             .cards {
                 grid-template-columns: 1fr;
             }
 
-            .action {
-                grid-column: span 1;
+            .search-box {
+                flex-direction: column;
             }
         }
     </style>
@@ -170,28 +190,28 @@
 
 <div class="container">
 
-    <div class="search-box">
+    <div class="search-card">
         <h2>Prepare for a Deal</h2>
 
-        <div class="input-row">
+        <div class="search-box">
             <input
-                type="text"
                 id="company"
-                placeholder="Enter company name"
+                type="text"
                 value="Acme Technologies"
+                placeholder="Enter company name"
             >
 
-            <button onclick="getBriefing()">
+            <button onclick="prepareDeal()">
                 Prepare for Call
             </button>
         </div>
+
+        <div id="loading">
+            🧠 Recalling deal history from Hindsight...
+        </div>
     </div>
 
-    <div class="loading" id="loading">
-        🧠 Recalling deal history...
-    </div>
-
-    <div class="dashboard" id="dashboard">
+    <div id="result">
 
         <div class="company-title">
             <h2 id="companyName"></h2>
@@ -220,25 +240,27 @@
                 <p id="risks"></p>
             </div>
 
-            <div class="card action">
-                <h3>🎯 Recommended Next Action</h3>
-                <p id="nextAction"></p>
-            </div>
-
         </div>
 
-        <div class="memory">
+        <div class="action-card">
+            <h3>🎯 Recommended Next Action</h3>
+            <p id="nextAction"></p>
+        </div>
+
+        <div class="memory-card">
             <h3>🧠 Hindsight Memory</h3>
             <pre id="memory"></pre>
         </div>
 
     </div>
 
+    <div id="error" class="error" style="display:none;"></div>
+
 </div>
 
 <script>
 
-async function getBriefing() {
+async function prepareDeal() {
 
     const company = document.getElementById("company").value.trim();
 
@@ -247,11 +269,9 @@ async function getBriefing() {
         return;
     }
 
-    const loading = document.getElementById("loading");
-    const dashboard = document.getElementById("dashboard");
-
-    loading.style.display = "block";
-    dashboard.style.display = "none";
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("result").style.display = "none";
+    document.getElementById("error").style.display = "none";
 
     try {
 
@@ -262,8 +282,7 @@ async function getBriefing() {
         const data = await response.json();
 
         if (data.error) {
-            alert(data.error);
-            return;
+            throw new Error(data.error);
         }
 
         document.getElementById("companyName").textContent =
@@ -285,21 +304,20 @@ async function getBriefing() {
             data.deal_briefing.recommended_next_action;
 
         document.getElementById("memory").textContent =
-            JSON.stringify(
-                data.deal_briefing.hindsight_memory,
-                null,
-                2
-            );
+            JSON.stringify(data.deal_briefing.hindsight_memory, null, 2);
 
-        dashboard.style.display = "block";
+        document.getElementById("result").style.display = "block";
 
     } catch (error) {
 
-        alert("Could not connect to the backend.");
+        document.getElementById("error").textContent =
+            "Unable to prepare deal briefing: " + error.message;
+
+        document.getElementById("error").style.display = "block";
 
     } finally {
 
-        loading.style.display = "none";
+        document.getElementById("loading").style.display = "none";
     }
 }
 

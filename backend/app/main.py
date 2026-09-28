@@ -4,11 +4,14 @@ from pydantic import BaseModel
 from hindsight_client import Hindsight
 from pathlib import Path
 
+
 app = FastAPI(title="Deal Intelligence Agent")
+
 
 hindsight = Hindsight(
     base_url="http://localhost:8888"
 )
+
 
 BANK_ID = "deal-intelligence"
 
@@ -26,9 +29,9 @@ def root():
 
 
 @app.post("/deals/remember")
-def remember_deal(data: DealInteraction):
+async def remember_deal(data: DealInteraction):
     try:
-        hindsight.retain(
+        await hindsight.aretain(
             bank_id=BANK_ID,
             content=f"Company: {data.company}. Interaction: {data.interaction}"
         )
@@ -45,9 +48,9 @@ def remember_deal(data: DealInteraction):
 
 
 @app.get("/deals/{company}/intelligence")
-def get_deal_intelligence(company: str):
+async def get_deal_intelligence(company: str):
     try:
-        result = hindsight.recall(
+        result = await hindsight.arecall(
             bank_id=BANK_ID,
             query=f"Tell me everything important about the deal with {company}"
         )
@@ -64,9 +67,9 @@ def get_deal_intelligence(company: str):
 
 
 @app.get("/deals/{company}/briefing")
-def get_deal_briefing(company: str):
+async def get_deal_briefing(company: str):
     try:
-        result = hindsight.recall(
+        result = await hindsight.arecall(
             bank_id=BANK_ID,
             query=f"Important information, concerns, competitors, requirements and risks for the deal with {company}"
         )
