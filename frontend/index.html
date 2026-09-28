@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Deal Intelligence Agent</title>
 
     <style>
@@ -35,41 +37,134 @@
         }
 
         .container {
-            max-width: 1100px;
-            margin: 35px auto;
+            max-width: 1150px;
+            margin: 30px auto;
             padding: 0 20px;
         }
 
-        .search-card {
-            background: white;
-            padding: 25px;
-            border-radius: 14px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        .section-title {
+            margin-bottom: 18px;
+        }
+
+        .section-title h2 {
+            font-size: 23px;
+        }
+
+        .section-title p {
+            color: #667085;
+            margin-top: 5px;
+        }
+
+        /* DEAL CARDS */
+
+        .deals {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
             margin-bottom: 30px;
         }
 
-        .search-card h2 {
+        .deal-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, .07);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: .2s;
+        }
+
+        .deal-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .deal-card.active {
+            border-color: #2563eb;
+        }
+
+        .deal-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .deal-card p {
+            color: #667085;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .status {
+            display: inline-block;
+            background: #eaf2ff;
+            color: #1d4ed8;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* WORKSPACE */
+
+        #workspace {
+            display: none;
+        }
+
+        .workspace-header {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, .07);
+            margin-bottom: 20px;
+        }
+
+        .workspace-header h2 {
+            font-size: 25px;
+            margin-bottom: 6px;
+        }
+
+        .workspace-header p {
+            color: #667085;
+        }
+
+        .interaction-card {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, .07);
+            margin-bottom: 20px;
+        }
+
+        .interaction-card h3 {
             margin-bottom: 15px;
         }
 
-        .search-box {
-            display: flex;
-            gap: 12px;
-        }
-
-        input {
-            flex: 1;
+        textarea {
+            width: 100%;
+            min-height: 110px;
             padding: 13px;
             border: 1px solid #d0d5dd;
             border-radius: 8px;
-            font-size: 15px;
+            resize: vertical;
+            font-size: 14px;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #2563eb;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
         }
 
         button {
             background: #2563eb;
             color: white;
             border: none;
-            padding: 13px 22px;
+            padding: 12px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
@@ -79,12 +174,24 @@
             background: #1d4ed8;
         }
 
-        #loading {
-            display: none;
-            margin-top: 20px;
-            color: #2563eb;
-            font-weight: bold;
+        button.secondary {
+            background: #475467;
         }
+
+        button.secondary:hover {
+            background: #344054;
+        }
+
+        #message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            background: #ecfdf3;
+            color: #027a48;
+        }
+
+        /* BRIEFING */
 
         #result {
             display: none;
@@ -113,7 +220,7 @@
             background: white;
             padding: 22px;
             border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, .07);
         }
 
         .card h3 {
@@ -161,7 +268,15 @@
             overflow-y: auto;
         }
 
-        .error {
+        #loading {
+            display: none;
+            margin-top: 15px;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        #error {
+            display: none;
             margin-top: 20px;
             color: #b42318;
             background: #fef3f2;
@@ -169,13 +284,13 @@
             border-radius: 8px;
         }
 
-        @media (max-width: 700px) {
-            .cards {
+        @media (max-width: 800px) {
+            .deals {
                 grid-template-columns: 1fr;
             }
 
-            .search-box {
-                flex-direction: column;
+            .cards {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -183,145 +298,315 @@
 
 <body>
 
-<header>
-    <h1>🧠 Deal Intelligence Agent</h1>
-    <p>AI-powered sales intelligence with persistent Hindsight memory</p>
-</header>
+    <header>
+        <h1>🧠 Deal Intelligence Agent</h1>
+        <p>AI-powered sales intelligence with persistent Hindsight memory</p>
+    </header>
 
-<div class="container">
+    <div class="container">
 
-    <div class="search-card">
-        <h2>Prepare for a Deal</h2>
+        <!-- DEALS -->
 
-        <div class="search-box">
-            <input
-                id="company"
-                type="text"
-                value="Acme Technologies"
-                placeholder="Enter company name"
-            >
-
-            <button onclick="prepareDeal()">
-                Prepare for Call
-            </button>
+        <div class="section-title">
+            <h2>My Deals</h2>
+            <p>Select a deal to view its intelligence and add new interactions.</p>
         </div>
 
-        <div id="loading">
-            🧠 Recalling deal history from Hindsight...
+        <div class="deals">
+
+            <div class="deal-card active"
+                 onclick="selectDeal('NovaTech Solutions', this)">
+                <h3>NovaTech Solutions</h3>
+                <p>Enterprise Software Platform</p>
+                <span class="status">Active</span>
+            </div>
+
+            <div class="deal-card"
+                 onclick="selectDeal('FinEdge', this)">
+                <h3>FinEdge</h3>
+                <p>Business Analytics Platform</p>
+                <span class="status">Negotiation</span>
+            </div>
+
+            <div class="deal-card"
+                 onclick="selectDeal('CloudSphere', this)">
+                <h3>CloudSphere</h3>
+                <p>Cloud Infrastructure Solution</p>
+                <span class="status">Discovery</span>
+            </div>
+
         </div>
+
+
+        <!-- WORKSPACE -->
+
+        <div id="workspace">
+
+            <div class="workspace-header">
+                <h2 id="selectedCompany">NovaTech Solutions</h2>
+                <p>Deal workspace and persistent customer memory</p>
+            </div>
+
+
+            <!-- ADD INTERACTION -->
+
+            <div class="interaction-card">
+
+                <h3>➕ Add Deal Interaction</h3>
+
+                <textarea
+                    id="interaction"
+                    placeholder="Example: Customer said pricing is high and they are comparing Competitor X.">
+                </textarea>
+
+                <div class="buttons">
+
+                    <button onclick="rememberInteraction()">
+                        🧠 Remember Interaction
+                    </button>
+
+                    <button class="secondary" onclick="prepareDeal()">
+                        🎯 Prepare for Call
+                    </button>
+
+                </div>
+
+                <div id="message"></div>
+
+                <div id="loading">
+                    🧠 Hindsight is recalling deal history...
+                </div>
+
+            </div>
+
+
+            <!-- RESULT -->
+
+            <div id="result">
+
+                <div class="company-title">
+                    <h2 id="companyName"></h2>
+                    <p>AI-generated deal intelligence</p>
+                </div>
+
+                <div class="cards">
+
+                    <div class="card">
+                        <h3>⚠️ Customer Concerns</h3>
+                        <p id="concerns"></p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🏆 Competitors</h3>
+                        <p id="competitors"></p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🔧 Important Requirements</h3>
+                        <p id="requirements"></p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🚨 Key Risks</h3>
+                        <p id="risks"></p>
+                    </div>
+
+                </div>
+
+
+                <div class="action-card">
+
+                    <h3>🎯 Recommended Next Action</h3>
+
+                    <p id="nextAction"></p>
+
+                </div>
+
+
+                <div class="memory-card">
+
+                    <h3>🧠 Hindsight Memory</h3>
+
+                    <pre id="memory"></pre>
+
+                </div>
+
+            </div>
+
+
+            <div id="error"></div>
+
+        </div>
+
     </div>
 
-    <div id="result">
 
-        <div class="company-title">
-            <h2 id="companyName"></h2>
-            <p>AI-generated deal intelligence</p>
-        </div>
+    <script>
 
-        <div class="cards">
+        let selectedCompany = "NovaTech Solutions";
 
-            <div class="card">
-                <h3>⚠️ Customer Concerns</h3>
-                <p id="concerns"></p>
-            </div>
 
-            <div class="card">
-                <h3>🏆 Competitors</h3>
-                <p id="competitors"></p>
-            </div>
+        /* SELECT DEAL */
 
-            <div class="card">
-                <h3>🔧 Important Requirements</h3>
-                <p id="requirements"></p>
-            </div>
+        function selectDeal(company, element) {
 
-            <div class="card">
-                <h3>🚨 Key Risks</h3>
-                <p id="risks"></p>
-            </div>
+            selectedCompany = company;
 
-        </div>
+            document.getElementById("selectedCompany").textContent = company;
 
-        <div class="action-card">
-            <h3>🎯 Recommended Next Action</h3>
-            <p id="nextAction"></p>
-        </div>
+            document.getElementById("workspace").style.display = "block";
 
-        <div class="memory-card">
-            <h3>🧠 Hindsight Memory</h3>
-            <pre id="memory"></pre>
-        </div>
+            document.getElementById("result").style.display = "none";
 
-    </div>
+            document.getElementById("message").style.display = "none";
 
-    <div id="error" class="error" style="display:none;"></div>
+            document.getElementById("error").style.display = "none";
 
-</div>
+            document.querySelectorAll(".deal-card").forEach(card => {
+                card.classList.remove("active");
+            });
 
-<script>
-
-async function prepareDeal() {
-
-    const company = document.getElementById("company").value.trim();
-
-    if (!company) {
-        alert("Please enter a company name.");
-        return;
-    }
-
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("result").style.display = "none";
-    document.getElementById("error").style.display = "none";
-
-    try {
-
-        const response = await fetch(
-            `/deals/${encodeURIComponent(company)}/briefing`
-        );
-
-        const data = await response.json();
-
-        if (data.error) {
-            throw new Error(data.error);
+            element.classList.add("active");
         }
 
-        document.getElementById("companyName").textContent =
-            data.company;
 
-        document.getElementById("concerns").textContent =
-            data.deal_briefing.customer_concerns;
+        /* REMEMBER INTERACTION */
 
-        document.getElementById("competitors").textContent =
-            data.deal_briefing.competitors;
+        async function rememberInteraction() {
 
-        document.getElementById("requirements").textContent =
-            data.deal_briefing.important_requirements;
+            const interaction =
+                document.getElementById("interaction").value.trim();
 
-        document.getElementById("risks").textContent =
-            data.deal_briefing.key_risks;
+            if (!interaction) {
 
-        document.getElementById("nextAction").textContent =
-            data.deal_briefing.recommended_next_action;
+                alert("Please enter a deal interaction.");
 
-        document.getElementById("memory").textContent =
-            JSON.stringify(data.deal_briefing.hindsight_memory, null, 2);
+                return;
+            }
 
-        document.getElementById("result").style.display = "block";
+            document.getElementById("message").style.display = "none";
+            document.getElementById("error").style.display = "none";
 
-    } catch (error) {
+            try {
 
-        document.getElementById("error").textContent =
-            "Unable to prepare deal briefing: " + error.message;
+                const response = await fetch("/deals/remember", {
 
-        document.getElementById("error").style.display = "block";
+                    method: "POST",
 
-    } finally {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-        document.getElementById("loading").style.display = "none";
-    }
-}
+                    body: JSON.stringify({
+                        company: selectedCompany,
+                        interaction: interaction
+                    })
 
-</script>
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                document.getElementById("message").textContent =
+                    "✅ Interaction remembered by Hindsight.";
+
+                document.getElementById("message").style.display = "block";
+
+                document.getElementById("interaction").value = "";
+
+            }
+
+            catch (error) {
+
+                document.getElementById("error").textContent =
+                    "Unable to remember interaction: " + error.message;
+
+                document.getElementById("error").style.display = "block";
+            }
+
+        }
+
+
+        /* PREPARE FOR CALL */
+
+        async function prepareDeal() {
+
+            document.getElementById("loading").style.display = "block";
+
+            document.getElementById("result").style.display = "none";
+
+            document.getElementById("error").style.display = "none";
+
+            try {
+
+                const response = await fetch(
+                    `/deals/${encodeURIComponent(selectedCompany)}/briefing`
+                );
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                document.getElementById("companyName").textContent =
+                    data.company;
+
+                document.getElementById("concerns").textContent =
+                    data.deal_briefing.customer_concerns;
+
+                document.getElementById("competitors").textContent =
+                    data.deal_briefing.competitors;
+
+                document.getElementById("requirements").textContent =
+                    data.deal_briefing.important_requirements;
+
+                document.getElementById("risks").textContent =
+                    data.deal_briefing.key_risks;
+
+                document.getElementById("nextAction").textContent =
+                    data.deal_briefing.recommended_next_action;
+
+
+                /* FIXED HINDSIGHT MEMORY */
+
+                document.getElementById("memory").textContent =
+                    JSON.stringify(
+                        data.hindsight_memory,
+                        null,
+                        2
+                    );
+
+
+                document.getElementById("result").style.display = "block";
+
+            }
+
+            catch (error) {
+
+                document.getElementById("error").textContent =
+                    "Unable to prepare deal briefing: " + error.message;
+
+                document.getElementById("error").style.display = "block";
+            }
+
+            finally {
+
+                document.getElementById("loading").style.display = "none";
+            }
+
+        }
+
+
+        /* SHOW FIRST DEAL */
+
+        document.getElementById("workspace").style.display = "block";
+
+    </script>
 
 </body>
+
 </html>
